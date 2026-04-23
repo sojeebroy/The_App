@@ -1,0 +1,267 @@
+.users-dashboard {
+    background: #f9fafb;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.toolbar-wrapper {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.toolbar-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-custom {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1.5px solid;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-block {
+    color: #0066cc;
+    border-color: #0066cc;
+    background: white;
+}
+
+.btn-block:hover:not(:disabled) {
+    background: #0066cc;
+    color: white;
+}
+
+.btn-unblock {
+    color: #0066cc;
+    border-color: #0066cc;
+    background: white;
+}
+
+.btn-unblock:hover:not(:disabled) {
+    background: #0066cc;
+    color: white;
+}
+
+.btn-delete {
+    color: #d32f2f;
+    border-color: #d32f2f;
+    background: white;
+}
+
+.btn-delete:hover:not(:disabled) {
+    background: #d32f2f;
+    color: white;
+}
+
+.btn-delete-unverified {
+    color: #f57c00;
+    border-color: #f57c00;
+    background: white;
+}
+
+.btn-delete-unverified:hover:not(:disabled) {
+    background: #f57c00;
+    color: white;
+}
+
+.btn-custom:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.filter-wrapper {
+    margin-left: auto;
+}
+
+.filter-input {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px 12px;
+    width: 200px;
+    font-size: 13px;
+}
+
+.table-wrapper {
+    background: white;
+    border-radius: 8px;
+    overflow: auto; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.users-table {
+    margin: 0;
+    border: none;
+    width: 100%;
+    table-layout: fixed; 
+}
+
+.users-table thead {
+    background: #f5f5f5;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.users-table thead th {
+    padding: 16px 12px;
+    font-weight: 600;
+    font-size: 13px;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+}
+
+.users-table tbody td {
+    padding: 16px 12px;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+}
+
+.users-table tbody tr {
+    transition: background 0.15s;
+}
+
+.users-table tbody tr:hover {
+    background: #fafafa;
+}
+
+.users-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.checkbox-col {
+    width: 40px;
+    text-align: center;
+}
+
+.name-col {
+    font-weight: 600;
+    color: #333;
+}
+
+.name-subtitle {
+    font-size: 12px;
+    color: #999;
+    margin-top: 4px;
+}
+
+.email-col {
+    color: #666;
+}
+
+.email-col, .email-col td, .email-col th {
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.status-col {
+    width: 120px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-active {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-blocked {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.status-unverified {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.last-seen-text {
+    font-size: 13px;
+    color: #666;
+}
+
+.last-seen-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+.activity-sparkline {
+    width: 100px;
+    height: 22px;
+    display: block;
+}
+
+.activity-sparkline {
+    width: 100px;
+    height: 22px;
+    display: inline-block;
+}
+
+.activity-sparkline svg { width: 100%; height: 100%; display: block; }
+.activity-sparkline rect { rx: 2; ry: 2; transition: transform 120ms ease, fill 120ms ease; }
+.activity-sparkline rect:hover { transform: translateY(-2px); }
+
+.blocked-row .activity-sparkline { opacity: 0.45; }
+
+.blocked-row {
+    opacity: 0.45;
+}
+.blocked-row .name-col {
+    text-decoration: line-through;
+    color: rgba(0,0,0,0.45);
+}
+.blocked-row td { color: rgba(0,0,0,0.45); }
+
+.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.sortable:hover {
+    color: #0066cc;
+}
+
+.sort-icon {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 11px;
+    color: #999;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.selected-count {
+    color: #0066cc;
+    font-size: 13px;
+    font-weight: 500;
+}

@@ -1,0 +1,172 @@
+﻿
+@using System.Linq
+@using The_App.Models
+@using static The_App.Models.User
+
+@model List<User>
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_Layout";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="users-dashboard">
+    <div class="toolbar-wrapper">
+        <div class="toolbar-buttons">
+            <button class="btn-custom btn-block" id="btnBlock" disabled
+                    data-bs-toggle="tooltip" title="Block selected users">
+                <i class="bi bi-lock-fill"></i>
+            </button>
+
+            <button class="btn-custom btn-unblock" id="btnUnblock" disabled
+                    data-bs-toggle="tooltip" title="Unblock selected users">
+                <i class="bi bi-unlock-fill"></i>
+            </button>
+
+            <button class="btn-custom btn-delete" id="btnDelete" disabled
+                    data-bs-toggle="tooltip" title="Delete selected users">
+                <i class="bi bi-trash3-fill"></i>
+            </button>
+
+            <button class="btn-custom btn-delete-unverified" id="btnDeleteUnverified" disabled
+                    data-bs-toggle="tooltip" title="Delete unverified users from selection">
+                <i class="bi bi-envelope-x-fill"></i>
+            </button>
+        </div>
+
+        <div class="filter-wrapper">
+            <input type="text" class="filter-input" id="filterInput" placeholder="Filter" />
+        </div>
+    </div>
+
+
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1100">
+        <div id="statusToast" class="toast align-items-center border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body fw-medium" id="toastMessage"></div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirmModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header py-2 border-0">
+                    <h6 class="modal-title" id="confirmTitle">Confirm</h6>
+                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-2">
+                    <p class="mb-0 small" id="confirmMessage"></p>
+                </div>
+                <div class="modal-footer py-2 border-0">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-danger" id="confirmOk">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="users-table" id="usersTable">
+            <thead>
+                <tr>
+                    <th class="checkbox-col">
+                        <input type="checkbox" id="selectAll" />
+                    </th>
+                    <th class="sortable" data-col="name">
+                        Name <span class="sort-icon">⇅</span>
+                    </th>
+                    <th class="sortable" data-col="email">
+                        Email <span class="sort-icon">⇅</span>
+                    </th>
+                    <th class="sortable" data-col="status">
+                        Status <span class="sort-icon">⇅</span>
+                    </th>
+                    <th class="sortable" data-col="lastlogin">
+                        Last Seen <span class="sort-icon">⇅</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                @foreach (var user in Model)
+                {
+                    var rnd = new System.Random(user.Id.GetHashCode());
+                    var activity = string.Join(',', Enumerable.Range(0,8).Select(i => rnd.Next(0,6)));
+                    <tr class="@(user.Status == UserStatus.Blocked ? "blocked-row" : "")" data-id="@user.Id"
+                        data-name="@user.Name.ToLower()"
+                        data-email="@(user.Email?.ToLower() ?? string.Empty)"
+                        data-status="@user.Status.ToString().ToLower()"
+                        data-lastlogin="@(user.LastLoginAt?.Ticks ?? 0)"
+                        data-activity="@activity">
+                        <td class="checkbox-col">
+                            <input type="checkbox" class="row-check" value="@user.Id" />
+                        </td>
+                        <td class="name-col">
+                            <div>@user.Name</div>
+                                <div class="name-subtitle"> @user.CompanyDesignation , @user.CompanyName</div>
+                        </td>
+                        <td class="email-col">@user.Email</td>
+                        <td>
+                            @switch (user.Status)
+                            {
+                                case UserStatus.Active:
+                                    <span class="status-badge status-active">Active</span>
+                                    break;
+                                case UserStatus.Blocked:
+                                    <span class="status-badge status-blocked">Blocked</span>
+                                    break;
+                                case UserStatus.Unverified:
+                                    <span class="status-badge status-unverified">Unverified</span>
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            <div class="last-seen-wrapper">
+                                <div class="last-seen-text">
+                                    @if (user.LastLoginAt.HasValue)
+                                    {
+                                        <span title="@user.LastLoginAt.Value.ToString("MMM d, yyyy HH:mm:ss") UTC">
+                                            @TimeAgo(user.LastLoginAt.Value)
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span>Never</span>
+                                    }
+                                </div>
+                                <div class="activity-sparkline" id="chart-@user.Id" aria-hidden="true"></div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center text-muted py-5">
+        <i class="bi bi-people fs-1 d-block mb-2"></i>
+        No users found.
+    </div>
+}
+
+@functions {
+    static string TimeAgo(DateTime dt)
+    {
+        var diff = DateTime.UtcNow - dt;
+        if (diff.TotalSeconds < 60) return "less than a minute ago";
+        if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes} minute{((int)diff.TotalMinutes == 1 ? "" : "s")} ago";
+        if (diff.TotalHours < 24) return $"{(int)diff.TotalHours} hour{((int)diff.TotalHours == 1 ? "" : "s")} ago";
+        if (diff.TotalDays < 7) return $"{(int)diff.TotalDays} day{((int)diff.TotalDays == 1 ? "" : "s")} ago";
+        if (diff.TotalDays < 30) return $"{(int)(diff.TotalDays / 7)} week{((int)(diff.TotalDays / 7) == 1 ? "" : "s")} ago";
+        return dt.ToString("MMM d, yyyy");
+    }
+}
+
+@section Scripts {
+    <script src="~/js/users-dashboard.js"></script>
+}
